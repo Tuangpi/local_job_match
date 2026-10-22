@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-50: #eef6ff;
+  --color-brand-100: #d9ebff;
+  --color-brand-500: #1d6fe0;
+  --color-brand-600: #1459bd;
+  --color-brand-700: #104798;
+}
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  font-family:
+    'Noto Sans Myanmar',
+    'Padauk',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
+}

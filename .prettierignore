@@ -1,0 +1,8 @@
+node_modules/
+dist/
+coverage/
+package-lock.json
+storage/uploads/
+
+# Docs use a deliberate Markdown list style; do not reformat them.
+*.md

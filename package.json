@@ -1,0 +1,38 @@
+{
+  "name": "local-job-match",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Myanmar-first marketplace connecting customers with local experts.",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @ljm/shared && npm run build -w @ljm/api && npm run build -w @ljm/web",
+    "clean": "tsc -b --clean && rm -rf apps/api/dist apps/web/dist packages/shared/dist",
+    "dev": "concurrently -n api,web -c blue,magenta \"npm run dev -w @ljm/api\" \"npm run dev -w @ljm/web\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "npm run test -w @ljm/api && npm run test -w @ljm/web",
+    "typecheck": "tsc -b && npm run typecheck -w @ljm/api && npm run typecheck -w @ljm/web"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "concurrently": "10.0.6",
+    "eslint": "9.39.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "16.5.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

@@ -31,6 +31,39 @@ with independent local experts and service businesses.
 -   [Security and operations](docs/SECURITY.md)
 -   [Phased implementation plan](docs/IMPLEMENTATION_PLAN.md)
 
+## Development setup
+
+This repository is an npm workspaces monorepo:
+
+```text
+apps/api        Express 5 + TypeScript REST API
+apps/web        Vite + React 19 + Tailwind CSS 4 frontend
+packages/shared Shared types, domain enums, and API envelope
+```
+
+Requirements: Node.js 22.12 or newer, and PostgreSQL.
+
+```bash
+npm install
+cp .env.example .env   # then fill in the values
+npm run dev            # API on :4000, web on :5173
+```
+
+The Vite dev server proxies `/api` to the API, so the frontend talks to
+`/api/v1/...` in development.
+
+### Quality checks
+
+```bash
+npm run typecheck      # tsc project references + per-app checks
+npm run lint           # ESLint 9 flat config, type-checked rules
+npm run format:check   # Prettier
+npm run test           # Vitest + Supertest, Vitest + Testing Library
+npm run build          # Build shared, API, and web
+```
+
+CI runs the same commands on every push and pull request.
+
 ## MVP north star
 
 Help customers find a suitable expert, agree on a quotation, complete

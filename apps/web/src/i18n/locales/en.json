@@ -1,0 +1,20 @@
+{
+  "app": {
+    "title": "Local Job Match",
+    "tagline": "Find trusted local experts for your work",
+    "languageLabel": "Language",
+    "loading": "Loading..."
+  },
+  "nav": {
+    "home": "Home",
+    "experts": "Experts",
+    "jobs": "My Jobs",
+    "login": "Sign in"
+  },
+  "health": {
+    "title": "Service status",
+    "ok": "API connected",
+    "failed": "API unreachable",
+    "checkedAt": "Checked at {{time}}"
+  }
+}

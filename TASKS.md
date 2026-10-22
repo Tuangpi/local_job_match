@@ -12,10 +12,10 @@
 - [x] Confirm OTP and hosting providers
 
 ## Phase 1 - Project Foundation
-- [ ] Create application and repository structure
-  - [ ] Initialize TypeScript config, linting, formatting
-  - [ ] Set up test runner, CI
-  - [ ] Configure environment variables (.env.example)
+- [x] Create application and repository structure
+  - [x] Initialize TypeScript config, linting, formatting
+  - [x] Set up test runner, CI
+  - [x] Configure environment variables (.env.example)
 - [ ] Set up PostgreSQL and Prisma migrations
   - [ ] Initialize Prisma schema
   - [ ] Create initial migration setup
