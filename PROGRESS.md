@@ -1,11 +1,14 @@
 # Local Job Match - Progress Tracker
 
 ## Current State
-- **Current task**: Phase 2 - Build category/township search with pagination (not started)
-- **Current phase**: Phase 2 - Expert Profiles and Discovery
-- **Next task**: GET /categories endpoint
+- **Current task**: None (Phase 2 complete)
+- **Current phase**: Phase 2 - Expert Profiles and Discovery (complete)
+- **Next task**: Phase 3 - Implement job creation, editing, and photo upload
 
 ## Recently Completed
+- [x] Phase 2 - Admin verification queue: `GET /admin/experts/pending-verification`, `POST /admin/experts/{expertId}/verification-decision` (admin-only)
+- [x] Phase 2 - Public expert profile: `GET /experts/{expertId}` returns public profile with verification status
+- [x] Phase 2 - Build category/township search with pagination: `/categories`, `/locations/cities`, `/locations/townships`, `/experts` search endpoints
 - [x] Phase 2 - Expert profiles, skills, service areas, portfolio: `/experts/me/profile`, `/me/skills`, `/me/areas`, `/me/portfolio` endpoints verified
 - [x] Phase 1 - Create shared UI patterns and Burmese/English localization: persisted language preference, expanded base locale files
 - [x] Phase 1 - Seed categories, cities, and townships: Yangon + 6 townships + 6 categories via `prisma db seed`
@@ -17,6 +20,8 @@
 - [x] Project documentation reviewed: PRD.md, ARCHITECTURE.md, DATABASE.md, API.md, SECURITY.md, IMPLEMENTATION_PLAN.md
 
 ## This Session
+- [x] Added catalog module: `/categories`, `/locations/cities`, `/locations/townships` endpoints
+- [x] Added expert search endpoint `GET /experts` with filters and cursor pagination
 - [x] Implemented expert profiles module: profile create/get/patch, skills/areas/portfolio replace endpoints
 - [x] Added `ExpertPortfolioItem` model and `expert_profiles` migration
 - [x] Verified expert profile flow end-to-end (create, skills, areas, portfolio, get)
@@ -45,12 +50,13 @@
 - None currently; repository foundation is in place and verified
 
 ## Next Steps
-1. Build category/township search with pagination (Phase 2)
-   - GET /categories endpoint
-   - GET /locations/townships endpoint
-   - Expert search with filters (GET /experts)
-2. Implement public profile pages and verification labels
-3. Build admin verification queue
+1. Implement public profile pages and verification labels (Phase 2)
+   - GET /experts/{expertId} public profile
+   - Verification status display
+2. Build admin verification queue
+   - Admin view pending verification experts
+   - Admin verification decision endpoint
+3. Jobs and quotations (Phase 3)
 
 ## Recent Decisions
 - Modular monolith architecture with Node.js + Express + TypeScript backend

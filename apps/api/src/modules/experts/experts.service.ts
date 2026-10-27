@@ -1,6 +1,7 @@
 import { prisma } from '../../lib/prisma.js';
 import { conflict, notFound } from '../../common/errors.js';
 import type {
+  ExpertsSearchQuery,
   CreateExpertProfileInput,
   UpdateExpertProfileInput,
   ReplaceSkillsInput,
@@ -143,6 +144,56 @@ export async function replacePortfolio(
   return getExpertProfile(userId);
 }
 
+export interface PublicExpertProfileView {
+  expertId: string;
+  userId: string;
+  name: string;
+  bio: string | null;
+  experienceYears: number | null;
+  verificationStatus: string;
+  isAvailable: boolean;
+  createdAt: string;
+  skills: { categoryId: string; experienceYears: number | null }[];
+  areas: { townshipId: string }[];
+  portfolio: { id: string; storageKey: string; caption: string | null }[];
+}
+
+export async function getPublicExpertProfile(expertId: string): Promise<PublicExpertProfileView> {
+  const profile = await prisma.expertProfile.findUnique({
+    where: { userId: expertId },
+    include: {
+      user: { select: { name: true, status: true } },
+      skills: true,
+      areas: true,
+      portfolioItems: true,
+    },
+  });
+
+  if (!profile || profile.user.status !== 'active') {
+    throw notFound('Expert profile not found.');
+  }
+
+  return {
+    expertId: profile.userId,
+    userId: profile.userId,
+    name: profile.user.name,
+    bio: profile.bio,
+    experienceYears: profile.experienceYears,
+    verificationStatus: profile.verificationStatus,
+    isAvailable: profile.isAvailable,
+    createdAt: profile.createdAt.toISOString(),
+    skills: profile.skills.map((skill) => ({
+      categoryId: skill.categoryId,
+      experienceYears: skill.experienceYears,
+    })),
+    areas: profile.areas.map((area) => ({ townshipId: area.townshipId })),
+    portfolio: profile.portfolioItems.map((item) => ({
+      id: item.id,
+      storageKey: item.storageKey,
+      caption: item.caption,
+    })),
+  };
+}
 function toView(profile: {
   userId: string;
   bio: string | null;
@@ -172,4 +223,94 @@ function toView(profile: {
       caption: item.caption,
     })),
   };
+}
+
+export interface ExpertSearchItem {
+  userId: string;
+  name: string;
+  bio: string | null;
+  experienceYears: number | null;
+  verificationStatus: string;
+  isAvailable: boolean;
+  skills: { categoryId: string; experienceYears: number | null }[];
+  areas: { townshipId: string }[];
+}
+
+export interface ExpertSearchResult {
+  items: ExpertSearchItem[];
+  nextCursor: string | null;
+}
+
+export async function searchExperts(query: ExpertsSearchQuery): Promise<ExpertSearchResult> {
+  const where: {
+    isAvailable: boolean;
+    skills?: { some: { categoryId: string } };
+    areas?: { some: { townshipId: string } };
+  } = { isAvailable: true };
+
+  if (query.categoryId) where.skills = { some: { categoryId: query.categoryId } };
+  if (query.townshipId) where.areas = { some: { townshipId: query.townshipId } };
+
+  let cursorFilter: Record<string, unknown> | undefined;
+  if (query.cursor) {
+    const decoded = decodeCursor(query.cursor);
+    if (decoded) {
+      cursorFilter = {
+        OR: [
+          { createdAt: { lt: decoded.createdAt } },
+          { createdAt: decoded.createdAt, userId: { lt: decoded.userId } },
+        ],
+      };
+    }
+  }
+
+  const profiles = await prisma.expertProfile.findMany({
+    where: cursorFilter ? { ...where, ...cursorFilter } : where,
+    include: {
+      user: { select: { name: true } },
+      skills: true,
+      areas: true,
+    },
+    orderBy: [{ createdAt: 'desc' }, { userId: 'desc' }],
+    take: query.limit + 1,
+  });
+
+  const hasMore = profiles.length > query.limit;
+  const page = hasMore ? profiles.slice(0, query.limit) : profiles;
+
+  const items: ExpertSearchItem[] = page.map((profile) => ({
+    userId: profile.userId,
+    name: profile.user.name,
+    bio: profile.bio,
+    experienceYears: profile.experienceYears,
+    verificationStatus: profile.verificationStatus,
+    isAvailable: profile.isAvailable,
+    skills: profile.skills.map((skill) => ({
+      categoryId: skill.categoryId,
+      experienceYears: skill.experienceYears,
+    })),
+    areas: profile.areas.map((area) => ({ townshipId: area.townshipId })),
+  }));
+
+  const last = page[page.length - 1];
+  const nextCursor = hasMore && last ? encodeCursor(last.createdAt, last.userId) : null;
+
+  return { items, nextCursor };
+}
+
+function encodeCursor(createdAt: Date, userId: string): string {
+  return Buffer.from(`${createdAt.toISOString()}|${userId}`).toString('base64url');
+}
+
+function decodeCursor(cursor: string): { createdAt: Date; userId: string } | null {
+  try {
+    const raw = Buffer.from(cursor, 'base64url').toString('utf8');
+    const [iso, userId] = raw.split('|');
+    if (!iso || !userId) return null;
+    const createdAt = new Date(iso);
+    if (Number.isNaN(createdAt.getTime())) return null;
+    return { createdAt, userId };
+  } catch {
+    return null;
+  }
 }

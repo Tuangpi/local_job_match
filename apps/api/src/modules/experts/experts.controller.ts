@@ -10,6 +10,8 @@ import {
   replaceSkills,
   replaceAreas,
   replacePortfolio,
+  searchExperts,
+  getPublicExpertProfile,
 } from './experts.service.js';
 import {
   createExpertProfileSchema,
@@ -17,6 +19,8 @@ import {
   replaceSkillsSchema,
   replaceAreasSchema,
   replacePortfolioSchema,
+  expertsSearchQuerySchema,
+  expertIdParamSchema,
 } from './experts.schemas.js';
 
 function userId(req: Request): string {
@@ -56,5 +60,17 @@ export const replaceAreasController = asyncHandler(async (req: Request, res: Res
 export const replacePortfolioController = asyncHandler(async (req: Request, res: Response) => {
   const input = replacePortfolioSchema.parse(req.body);
   const profile = await replacePortfolio(userId(req), input);
+  ok(res, profile);
+});
+
+export const searchExpertsController = asyncHandler(async (req: Request, res: Response) => {
+  const query = expertsSearchQuerySchema.parse(req.query);
+  const result = await searchExperts(query);
+  ok(res, result);
+});
+
+export const getPublicProfileController = asyncHandler(async (req: Request, res: Response) => {
+  const { expertId } = expertIdParamSchema.parse(req.params);
+  const profile = await getPublicExpertProfile(expertId);
   ok(res, profile);
 });

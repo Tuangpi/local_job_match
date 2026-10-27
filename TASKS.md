@@ -39,16 +39,16 @@
   - [x] Skills management (PUT /experts/me/skills)
   - [x] Service areas management (PUT /experts/me/areas)
   - [x] Portfolio item references
-- [ ] Build category/township search with pagination
-  - [ ] GET /categories endpoint
-  - [ ] GET /locations/townships endpoint
-  - [ ] Expert search with filters (GET /experts)
-- [ ] Implement public profile pages and verification labels
-  - [ ] GET /experts/{expertId} public profile
-  - [ ] Verification status display
-- [ ] Build admin verification queue
-  - [ ] Admin view pending verification experts
-  - [ ] Admin verification decision endpoint
+- [x] Build category/township search with pagination
+  - [x] GET /categories endpoint
+  - [x] GET /locations/townships endpoint
+  - [x] Expert search with filters (GET /experts)
+- [x] Implement public profile pages and verification labels
+  - [x] GET /experts/{expertId} public profile
+  - [x] Verification status display (verificationStatus returned in public profile)
+- [x] Build admin verification queue
+  - [x] Admin view pending verification experts
+  - [x] Admin verification decision endpoint
 
 **Exit criteria**: Customer can search and view eligible experts; private verification documents are inaccessible publicly.
 
@@ -120,5 +120,5 @@
 - Phase 5 pilot MUST run before Phase 6 iteration
 
 ## Current Focus
-- Current sprint: Phase 1 - Project Foundation
-- Next target: Phase 2 - Expert Profiles and Discovery
+- Current sprint: Phase 3 - Jobs and Quotations
+- Next target: Implement job creation, editing, and photo upload

@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 
-import { unauthenticated } from '../common/errors.js';
+import { unauthenticated, forbidden } from '../common/errors.js';
 
 import { getSessionUser } from '../modules/auth/auth.service.js';
 
@@ -55,6 +55,18 @@ export async function authContext(req: Request, _res: Response, next: NextFuncti
 export function requireAuth(req: Request, _res: Response, next: NextFunction): void {
   if (!req.user) {
     next(unauthenticated());
+    return;
+  }
+  next();
+}
+
+export function requireAdmin(req: Request, _res: Response, next: NextFunction): void {
+  if (!req.user) {
+    next(unauthenticated());
+    return;
+  }
+  if (!req.user.roles.includes('admin')) {
+    next(forbidden());
     return;
   }
   next();

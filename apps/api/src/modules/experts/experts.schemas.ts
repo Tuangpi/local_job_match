@@ -39,3 +39,17 @@ export type UpdateExpertProfileInput = z.infer<typeof updateExpertProfileSchema>
 export type ReplaceSkillsInput = z.infer<typeof replaceSkillsSchema>;
 export type ReplaceAreasInput = z.infer<typeof replaceAreasSchema>;
 export type ReplacePortfolioInput = z.infer<typeof replacePortfolioSchema>;
+
+export const expertsSearchQuerySchema = z.object({
+  categoryId: z.string().uuid().optional(),
+  townshipId: z.string().uuid().optional(),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+  cursor: z.string().optional(),
+});
+
+export type ExpertsSearchQuery = z.infer<typeof expertsSearchQuerySchema>;
+export const expertIdParamSchema = z.object({
+  expertId: z.string().uuid(),
+});
+
+export type ExpertIdParam = z.infer<typeof expertIdParamSchema>;
