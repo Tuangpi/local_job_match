@@ -18,7 +18,7 @@ describe('admin verification queue', () => {
 
   beforeAll(async () => {
     const admin = await prisma.user.create({
-      data: { phone: `+959${Date.now()}1`, name: 'Admin', status: 'active', roles: ['admin'] },
+      data: { phone: `+959${Date.now()}${Math.floor(Math.random()*100000)}1`, name: 'Admin', status: 'active', roles: ['admin'] },
     });
     adminUserId = admin.id;
 
@@ -28,7 +28,7 @@ describe('admin verification queue', () => {
     });
 
     const expert = await prisma.user.create({
-      data: { phone: `+959${Date.now()}2`, name: 'Expert', status: 'active', roles: ['expert'] },
+      data: { phone: `+959${Date.now()}${Math.floor(Math.random()*100000)}2`, name: 'Expert', status: 'active', roles: ['expert'] },
     });
     expertUserId = expert.id;
     await prisma.expertProfile.create({
@@ -63,7 +63,7 @@ describe('admin verification queue', () => {
 
   it('rejects non-admin', async () => {
     // create non-admin session
-    const u = await prisma.user.create({ data: { phone: `+959${Date.now()}3`, name: 'Cust', status: 'active', roles: ['customer'] } });
+    const u = await prisma.user.create({ data: { phone: `+959${Date.now()}${Math.floor(Math.random()*100000)}3`, name: 'Cust', status: 'active', roles: ['customer'] } });
     const tok = crypto.randomBytes(32).toString('base64url');
     await prisma.session.create({ data: { userId: u.id, tokenHash: hashValue(tok), expiresAt: new Date(Date.now() + 1000 * 60 * 60) } });
     await request(app).get(`${API_PREFIX}/admin/experts/pending-verification`).set('Cookie', `sid=${tok}`).expect(403);

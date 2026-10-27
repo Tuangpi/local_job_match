@@ -1,12 +1,28 @@
 import { prisma } from '../../lib/prisma.js';
 import { env } from '../../config/env.js';
-import { notFound, forbidden, validationError, businessRuleViolation } from '../../common/errors.js';
+import { notFound, forbidden, validationError, businessRuleViolation, conflict } from '../../common/errors.js';
 import { LocalFileStorage, isAllowedImageMimeType } from '../../lib/storage.js';
 import type { CreateJobInput, UpdateJobInput, InviteExpertsInput, QuotationInput } from './jobs.schemas.js';
 
 export interface JobPhotoView {
   id: string;
   storageKey: string;
+  createdAt: string;
+}
+
+export interface JobQuotationView {
+  id: string;
+  jobId: string;
+  expertId: string;
+  expertName: string;
+  expertVerificationStatus: string;
+  laborAmount: string;
+  materialsAmount: string;
+  currency: string;
+  scope: string;
+  estimatedDays: number | null;
+  validUntil: string | null;
+  status: string;
   createdAt: string;
 }
 
@@ -26,6 +42,7 @@ export interface JobView {
   createdAt: string;
   updatedAt: string;
   photos: JobPhotoView[];
+  quotations: JobQuotationView[];
 }
 
 const storage = new LocalFileStorage(env.uploadDir, env.maxUploadSizeMb * 1024 * 1024);
@@ -33,7 +50,15 @@ const storage = new LocalFileStorage(env.uploadDir, env.maxUploadSizeMb * 1024 *
 async function loadJob(jobId: string) {
   const job = await prisma.jobRequest.findUnique({
     where: { id: jobId },
-    include: { photos: true },
+    include: {
+      photos: true,
+      quotations: {
+        include: {
+          expert: { include: { user: { select: { name: true } } } },
+        },
+        orderBy: { createdAt: 'asc' },
+      },
+    },
   });
   if (!job) throw notFound('Job not found.');
   return job;
@@ -55,6 +80,20 @@ function toView(job: {
   createdAt: Date;
   updatedAt: Date;
   photos: { id: string; storageKey: string; createdAt: Date }[];
+  quotations?: {
+    id: string;
+    jobId: string;
+    expertId: string;
+    laborAmount: bigint;
+    materialsAmount: bigint;
+    currency: string;
+    scope: string;
+    estimatedDays: number | null;
+    validUntil: Date | null;
+    status: string;
+    createdAt: Date;
+    expert: { verificationStatus?: string; user: { name: string } };
+  }[];
 }): JobView {
   return {
     id: job.id,
@@ -75,6 +114,21 @@ function toView(job: {
       id: photo.id,
       storageKey: photo.storageKey,
       createdAt: photo.createdAt.toISOString(),
+    })),
+    quotations: (job.quotations ?? []).map((q) => ({
+      id: q.id,
+      jobId: q.jobId,
+      expertId: q.expertId,
+      expertName: q.expert.user.name,
+      expertVerificationStatus: q.expert.verificationStatus ?? 'unverified',
+      laborAmount: q.laborAmount.toString(),
+      materialsAmount: q.materialsAmount.toString(),
+      currency: q.currency,
+      scope: q.scope,
+      estimatedDays: q.estimatedDays,
+      validUntil: q.validUntil ? q.validUntil.toISOString() : null,
+      status: q.status,
+      createdAt: q.createdAt.toISOString(),
     })),
   };
 }
@@ -112,10 +166,12 @@ export async function createJob(customerId: string, input: CreateJobInput): Prom
 
 export async function getJob(jobId: string, userId: string): Promise<JobView> {
   const job = await loadJob(jobId);
-  if (job.customerId !== userId) {
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user || !user.roles.includes('admin')) throw forbidden();
-  }
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const isAdmin = !!user?.roles.includes('admin');
+  const isOwner = job.customerId === userId;
+  const hasQuotation = job.quotations.some((q) => q.expertId === userId);
+  const hasInvitation = !!(await prisma.jobInvitation.findFirst({ where: { jobId, expertId: userId } }));
+  if (!isOwner && !isAdmin && !hasQuotation && !hasInvitation) throw forbidden();
   return toView(job);
 }
 
@@ -310,5 +366,115 @@ export async function submitQuotation(
     validUntil: quotation.validUntil ? quotation.validUntil.toISOString() : null,
     status: quotation.status,
     createdAt: quotation.createdAt.toISOString(),
+  };
+}
+
+export async function listJobQuotations(jobId: string, userId: string): Promise<JobQuotationView[]> {
+  const job = await loadJob(jobId);
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const isAdmin = !!user?.roles.includes('admin');
+  const isOwner = job.customerId === userId;
+  const hasQuotation = job.quotations.some((q) => q.expertId === userId);
+  const hasInvitation = !!(await prisma.jobInvitation.findFirst({ where: { jobId, expertId: userId } }));
+  if (!isOwner && !isAdmin && !hasQuotation && !hasInvitation) throw forbidden();
+  return job.quotations.map((q) => ({
+    id: q.id,
+    jobId: q.jobId,
+    expertId: q.expertId,
+    expertName: q.expert.user.name,
+    expertVerificationStatus: q.expert.verificationStatus ?? 'unverified',
+    laborAmount: q.laborAmount.toString(),
+    materialsAmount: q.materialsAmount.toString(),
+    currency: q.currency,
+    scope: q.scope,
+    estimatedDays: q.estimatedDays,
+    validUntil: q.validUntil ? q.validUntil.toISOString() : null,
+    status: q.status,
+    createdAt: q.createdAt.toISOString(),
+  }));
+}
+
+export interface BookingView {
+  id: string;
+  jobId: string;
+  quotationId: string;
+  status: string;
+  agreedAmount: string;
+  currency: string;
+  createdAt: string;
+}
+
+export async function acceptQuotation(
+  customerId: string,
+  quotationId: string,
+): Promise<BookingView> {
+  const quotation = await prisma.quotation.findUnique({
+    where: { id: quotationId },
+    include: { job: true },
+  });
+  if (!quotation) throw notFound('Quotation not found.');
+  if (quotation.job.customerId !== customerId) throw forbidden();
+  if (quotation.status !== 'pending') {
+    throw conflict('Quotation is not pending.');
+  }
+  if (quotation.validUntil && quotation.validUntil.getTime() < Date.now()) {
+    throw businessRuleViolation('Quotation has expired.');
+  }
+  if (quotation.job.status !== 'open') {
+    throw conflict('Job is not open.');
+  }
+
+  const agreedAmount = quotation.laborAmount + quotation.materialsAmount;
+
+  const booking = await prisma.$transaction(async (tx) => {
+    const updatedJob = await tx.jobRequest.updateMany({
+      where: { id: quotation.jobId, status: 'open' },
+      data: { status: 'in_progress' },
+    });
+    if (updatedJob.count !== 1) {
+      throw conflict('Job is no longer open.');
+    }
+
+    const createdBooking = await tx.booking.create({
+      data: {
+        jobId: quotation.jobId,
+        quotationId: quotation.id,
+        status: 'in_progress',
+        agreedAmount,
+        currency: quotation.currency,
+      },
+    });
+
+    await tx.quotation.update({
+      where: { id: quotation.id },
+      data: { status: 'accepted' },
+    });
+
+    await tx.quotation.updateMany({
+      where: { jobId: quotation.jobId, id: { not: quotation.id }, status: 'pending' },
+      data: { status: 'rejected' },
+    });
+
+    await tx.jobStatusHistory.create({
+      data: {
+        bookingId: createdBooking.id,
+        actorId: customerId,
+        oldStatus: 'open',
+        newStatus: 'in_progress',
+        note: 'Quotation accepted.',
+      },
+    });
+
+    return createdBooking;
+  });
+
+  return {
+    id: booking.id,
+    jobId: booking.jobId,
+    quotationId: booking.quotationId,
+    status: booking.status,
+    agreedAmount: booking.agreedAmount.toString(),
+    currency: booking.currency,
+    createdAt: booking.createdAt.toISOString(),
   };
 }

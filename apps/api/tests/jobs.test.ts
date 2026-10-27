@@ -20,7 +20,7 @@ describe('jobs', () => {
 
   beforeAll(async () => {
     const user = await prisma.user.create({
-      data: { phone: `+959${Date.now()}`, name: 'Customer', status: 'active', roles: ['customer'] },
+      data: { phone: `+959${Date.now()}${Math.floor(Math.random()*100000)}`, name: 'Customer', status: 'active', roles: ['customer'] },
     });
     userId = user.id;
     token = crypto.randomBytes(32).toString('base64url');
@@ -67,7 +67,7 @@ describe('jobs', () => {
   });
 
   it('rejects edit by other user', async () => {
-    const other = await prisma.user.create({ data: { phone: `+959${Date.now()}9`, name: 'Other', status: 'active', roles: ['customer'] } });
+    const other = await prisma.user.create({ data: { phone: `+959${Date.now()}${Math.floor(Math.random()*100000)}9`, name: 'Other', status: 'active', roles: ['customer'] } });
     const otherToken = crypto.randomBytes(32).toString('base64url');
     await prisma.session.create({ data: { userId: other.id, tokenHash: hashValue(otherToken), expiresAt: new Date(Date.now() + 1000 * 60 * 60) } });
     await request(app).patch(`${API_PREFIX}/jobs/${jobId}`).set('Cookie', `sid=${otherToken}`).send({ title: 'hack' }).expect(403);

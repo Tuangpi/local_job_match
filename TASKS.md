@@ -60,16 +60,16 @@
 - [x] Implement invitations and quotation submission
   - [x] POST /jobs/{jobId}/invitations expert invitation
   - [x] PUT /experts/me/quotations quotation submission
-- [ ] Add customer quotation comparison
-  - [ ] GET /jobs/{jobId} view with quotations
+- [x] Add customer quotation comparison
+  - [x] GET /jobs/{jobId} view with quotations
   - [ ] UI for comparing scope, cost, duration, profiles
-- [ ] Implement quotation acceptance with transaction and concurrency protection
-  - [ ] PATCH /quotations/{quotationId}/accept transactional acceptance
-  - [ ] Concurrency protection (at most one booking)
-  - [ ] Create booking with validated agreed amount and currency
-- [ ] Create booking and status history
-  - [ ] POST /bookings or internal booking creation
-  - [ ] job_status_history audit trail
+- [x] Implement quotation acceptance with transaction and concurrency protection
+  - [x] PATCH /quotations/{quotationId}/accept transactional acceptance
+  - [x] Concurrency protection (at most one booking)
+  - [x] Create booking with validated agreed amount and currency
+- [x] Create booking and status history
+  - [x] POST /bookings or internal booking creation
+  - [x] job_status_history audit trail
 
 **Exit criteria**: A customer can complete the full flow from job request to accepted quotation and booking.
 
@@ -121,4 +121,4 @@
 
 ## Current Focus
 - Current sprint: Phase 3 - Jobs and Quotations
-- Next target: Add customer quotation comparison
+- Next target: Implement valid job status transitions

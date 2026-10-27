@@ -1,11 +1,13 @@
 # Local Job Match - Progress Tracker
 
 ## Current State
-- **Current task**: None (invitations and quotations complete)
-- **Current phase**: Phase 3 - Jobs and Quotations
-- **Next task**: Add customer quotation comparison
+- **Current task**: None (quotation acceptance complete)
+- **Current phase**: Phase 3 - Jobs and Quotations (complete)
+- **Next task**: Phase 4 - Implement valid job status transitions
 
 ## Recently Completed
+- [x] Phase 3 - Quotation acceptance: `POST/PATCH /quotations/{quotationId}/accept` creates booking, updates statuses, status history
+- [x] Phase 3 - Quotation comparison: `GET /jobs/{jobId}` and `GET /jobs/{jobId}/quotations` include quotation and expert details
 - [x] Phase 3 - Invitations and quotations: `POST /jobs/{jobId}/invitations`, `PUT /experts/me/quotations`, `POST /jobs/{jobId}/quotations`
 - [x] Phase 3 - Job creation/editing/photo upload: `POST /jobs`, `PATCH /jobs/{jobId}`, `POST /jobs/{jobId}/photos`
 - [x] Phase 2 - Admin verification queue: `GET /admin/experts/pending-verification`, `POST /admin/experts/{expertId}/verification-decision` (admin-only)

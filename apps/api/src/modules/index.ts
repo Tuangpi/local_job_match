@@ -6,6 +6,7 @@ import { expertsRouter } from './experts/experts.routes.js';
 import { catalogRouter } from './catalog/catalog.routes.js';
 import { adminRouter } from './admin/admin.routes.js';
 import { jobsRouter } from './jobs/jobs.routes.js';
+import { quotationsRouter } from './quotations/quotations.routes.js';
 
 export const apiRouter: Router = Router();
 
@@ -16,3 +17,4 @@ apiRouter.use('/experts', expertsRouter);
 apiRouter.use(catalogRouter);
 apiRouter.use('/admin', adminRouter);
 apiRouter.use('/jobs', jobsRouter);
+apiRouter.use('/quotations', quotationsRouter);

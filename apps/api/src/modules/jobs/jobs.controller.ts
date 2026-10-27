@@ -11,6 +11,7 @@ import {
   addJobPhoto,
   inviteExperts,
   submitQuotation,
+  listJobQuotations,
 } from './jobs.service.js';
 import {
   createJobSchema,
@@ -88,4 +89,9 @@ export const submitQuotationByExpertController = asyncHandler(async (req: Reques
   const input = quotationSchema.parse(req.body ?? {});
   const result = await submitQuotation(userId(req), input);
   created(res, result);
-});export { upload };
+});export const listJobQuotationsController = asyncHandler(async (req: Request, res: Response) => {
+  const { jobId } = jobIdParamSchema.parse(req.params);
+  const result = await listJobQuotations(jobId, userId(req));
+  ok(res, result);
+});
+export { upload };

@@ -12,6 +12,7 @@ import {
   upload,
   inviteExpertsController,
   submitQuotationByJobController,
+  listJobQuotationsController,
 } from './jobs.controller.js';
 
 export const jobsRouter: Router = Router();
@@ -39,4 +40,5 @@ jobsRouter.get('/:jobId', requireAuth, getJobController);
 jobsRouter.patch('/:jobId', requireAuth, updateJobController);
 jobsRouter.post('/:jobId/photos', requireAuth, runUpload, uploadJobPhotoController);
 jobsRouter.post('/:jobId/invitations', requireAuth, inviteExpertsController);
+jobsRouter.get('/:jobId/quotations', requireAuth, listJobQuotationsController);
 jobsRouter.post('/:jobId/quotations', requireAuth, submitQuotationByJobController);

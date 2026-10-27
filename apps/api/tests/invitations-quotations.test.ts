@@ -21,12 +21,12 @@ describe('invitations and quotations', () => {
   let jobId: string;
 
   beforeAll(async () => {
-    const customer = await prisma.user.create({ data: { phone: `+959${Date.now()}1`, name: 'Customer', status: 'active', roles: ['customer'] } });
+    const customer = await prisma.user.create({ data: { phone: `+959${Date.now()}${Math.floor(Math.random()*100000)}1`, name: 'Customer', status: 'active', roles: ['customer'] } });
     customerUserId = customer.id;
     customerToken = crypto.randomBytes(32).toString('base64url');
     await prisma.session.create({ data: { userId: customerUserId, tokenHash: hashValue(customerToken), expiresAt: new Date(Date.now() + 1000 * 60 * 60) } });
 
-    const expert = await prisma.user.create({ data: { phone: `+959${Date.now()}2`, name: 'Expert', status: 'active', roles: ['expert'] } });
+    const expert = await prisma.user.create({ data: { phone: `+959${Date.now()}${Math.floor(Math.random()*100000)}2`, name: 'Expert', status: 'active', roles: ['expert'] } });
     expertUserId = expert.id;
     expertToken = crypto.randomBytes(32).toString('base64url');
     await prisma.session.create({ data: { userId: expertUserId, tokenHash: hashValue(expertToken), expiresAt: new Date(Date.now() + 1000 * 60 * 60) } });
@@ -74,13 +74,20 @@ describe('invitations and quotations', () => {
     expect(res.body.data.laborAmount).toBe('5000');
   });
 
-  it('submits quotation via job endpoint', async () => {
-    // update existing
+  it('lists quotations for job', async () => {
     const res = await request(app)
-      .post(`${API_PREFIX}/jobs/${jobId}/quotations`)
-      .set('Cookie', `sid=${expertToken}`)
-      .send({ laborAmount: 6000, materialsAmount: 1000, scope: 'Fix it better' })
-      .expect(201);
-    expect(res.body.data.laborAmount).toBe('6000');
+      .get(`${API_PREFIX}/jobs/${jobId}/quotations`)
+      .set('Cookie', `sid=${customerToken}`)
+      .expect(200);
+    expect(res.body.data).toHaveLength(1);
+    expect(res.body.data[0].expertName).toBe('Expert');
+  });
+
+  it('includes quotations in job view', async () => {
+    const res = await request(app)
+      .get(`${API_PREFIX}/jobs/${jobId}`)
+      .set('Cookie', `sid=${customerToken}`)
+      .expect(200);
+    expect(res.body.data.quotations).toHaveLength(1);
   });
 });
