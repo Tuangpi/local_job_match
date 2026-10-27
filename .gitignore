@@ -17,8 +17,8 @@ test-results/
 !.env.example
 
 # Local uploads (never commit user files)
-storage/uploads/*
-!storage/uploads/.gitkeep
+apps/api/storage/uploads/*
+!apps/api/storage/uploads/.gitkeep
 
 # Logs
 *.log

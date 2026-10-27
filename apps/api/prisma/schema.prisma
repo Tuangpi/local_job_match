@@ -1,0 +1,270 @@
+// Prisma schema for Local Job Match.
+// Source of truth for the database model: docs/DATABASE.md
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AccountStatus {
+  active
+  suspended
+  pending
+  deleted
+}
+
+enum VerificationStatus {
+  unverified
+  pending
+  verified
+  rejected
+}
+
+enum JobType {
+  one_day
+  installation
+  project
+}
+
+enum JobStatus {
+  draft
+  open
+  in_progress
+  completed
+  cancelled
+  disputed
+}
+
+enum QuotationStatus {
+  pending
+  accepted
+  rejected
+  withdrawn
+  expired
+}
+
+model User {
+  id                String        @id @default(uuid()) @db.Uuid
+  phone             String        @unique @db.VarChar(32)
+  name              String        @db.VarChar(120)
+  preferredLanguage String        @default("my") @map("preferred_language") @db.VarChar(5)
+  status            AccountStatus @default(pending)
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  expertProfile        ExpertProfile?
+  jobRequests          JobRequest[]
+  statusHistoryActions JobStatusHistory[]
+  reviews              Review[]
+
+  @@map("users")
+}
+
+model City {
+  id     String  @id @default(uuid()) @db.Uuid
+  nameEn String  @unique @map("name_en") @db.VarChar(120)
+  nameMy String? @map("name_my") @db.VarChar(120)
+
+  townships Township[]
+
+  @@map("cities")
+}
+
+model Township {
+  id     String  @id @default(uuid()) @db.Uuid
+  cityId String  @map("city_id") @db.Uuid
+  nameEn String  @map("name_en") @db.VarChar(120)
+  nameMy String? @map("name_my") @db.VarChar(120)
+
+  city        City         @relation(fields: [cityId], references: [id])
+  expertAreas ExpertArea[]
+  jobRequests JobRequest[]
+
+  @@unique([cityId, nameEn])
+  @@map("townships")
+}
+
+model Category {
+  id       String  @id @default(uuid()) @db.Uuid
+  parentId String? @map("parent_id") @db.Uuid
+  slug     String  @unique @db.VarChar(100)
+  nameEn   String  @map("name_en") @db.VarChar(120)
+  nameMy   String? @map("name_my") @db.VarChar(120)
+  isActive Boolean @default(true) @map("is_active")
+
+  parent       Category?     @relation("CategoryTree", fields: [parentId], references: [id])
+  children     Category[]    @relation("CategoryTree")
+  expertSkills ExpertSkill[]
+  jobRequests  JobRequest[]
+
+  @@map("categories")
+}
+
+model ExpertProfile {
+  userId             String             @id @map("user_id") @db.Uuid
+  bio                String?            @db.Text
+  experienceYears    Int?               @map("experience_years") @db.SmallInt
+  verificationStatus VerificationStatus @default(unverified) @map("verification_status")
+  isAvailable        Boolean            @default(true) @map("is_available")
+  createdAt          DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user       User          @relation(fields: [userId], references: [id])
+  skills     ExpertSkill[]
+  areas      ExpertArea[]
+  quotations Quotation[]
+
+  @@map("expert_profiles")
+}
+
+model ExpertSkill {
+  expertId        String @map("expert_id") @db.Uuid
+  categoryId      String @map("category_id") @db.Uuid
+  experienceYears Int?   @map("experience_years") @db.SmallInt
+
+  expert   ExpertProfile @relation(fields: [expertId], references: [userId])
+  category Category      @relation(fields: [categoryId], references: [id])
+
+  @@id([expertId, categoryId])
+  @@map("expert_skills")
+}
+
+model ExpertArea {
+  expertId   String @map("expert_id") @db.Uuid
+  townshipId String @map("township_id") @db.Uuid
+
+  expert   ExpertProfile @relation(fields: [expertId], references: [userId])
+  township Township      @relation(fields: [townshipId], references: [id])
+
+  @@id([expertId, townshipId])
+  @@map("expert_areas")
+}
+
+model JobRequest {
+  id            String    @id @default(uuid()) @db.Uuid
+  customerId    String    @map("customer_id") @db.Uuid
+  categoryId    String    @map("category_id") @db.Uuid
+  townshipId    String    @map("township_id") @db.Uuid
+  jobType       JobType   @map("job_type")
+  title         String    @db.VarChar(160)
+  description   String    @db.Text
+  budgetMin     BigInt?   @map("budget_min")
+  budgetMax     BigInt?   @map("budget_max")
+  currency      String    @default("MMK") @db.Char(3)
+  preferredDate DateTime? @map("preferred_date") @db.Date
+  status        JobStatus @default(open)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  customer   User        @relation(fields: [customerId], references: [id])
+  category   Category    @relation(fields: [categoryId], references: [id])
+  township   Township    @relation(fields: [townshipId], references: [id])
+  photos     JobPhoto[]
+  quotations Quotation[]
+  booking    Booking?
+
+  @@index([townshipId, categoryId, status], name: "idx_jobs_location_category_status")
+  @@index([customerId, createdAt(sort: Desc)], name: "idx_jobs_customer_created")
+  @@map("job_requests")
+}
+
+model JobPhoto {
+  id         String   @id @default(uuid()) @db.Uuid
+  jobId      String   @map("job_id") @db.Uuid
+  storageKey String   @map("storage_key") @db.Text
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  job JobRequest @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@map("job_photos")
+}
+
+model Quotation {
+  id              String          @id @default(uuid()) @db.Uuid
+  jobId           String          @map("job_id") @db.Uuid
+  expertId        String          @map("expert_id") @db.Uuid
+  laborAmount     BigInt          @map("labor_amount")
+  materialsAmount BigInt          @default(0) @map("materials_amount")
+  currency        String          @default("MMK") @db.Char(3)
+  scope           String          @db.Text
+  estimatedDays   Int?            @map("estimated_days") @db.SmallInt
+  validUntil      DateTime?       @map("valid_until") @db.Timestamptz(6)
+  status          QuotationStatus @default(pending)
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  job     JobRequest    @relation(fields: [jobId], references: [id])
+  expert  ExpertProfile @relation(fields: [expertId], references: [userId])
+  booking Booking?
+
+  @@unique([jobId, expertId, id])
+  @@index([jobId, status], name: "idx_quotations_job_status")
+  @@map("quotations")
+}
+
+model Booking {
+  id           String    @id @default(uuid()) @db.Uuid
+  jobId        String    @unique @map("job_id") @db.Uuid
+  quotationId  String    @unique @map("quotation_id") @db.Uuid
+  scheduledAt  DateTime? @map("scheduled_at") @db.Timestamptz(6)
+  status       JobStatus @default(in_progress)
+  agreedAmount BigInt    @map("agreed_amount")
+  currency     String    @default("MMK") @db.Char(3)
+  completedAt  DateTime? @map("completed_at") @db.Timestamptz(6)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  job           JobRequest         @relation(fields: [jobId], references: [id])
+  quotation     Quotation          @relation(fields: [quotationId], references: [id])
+  statusHistory JobStatusHistory[]
+  review        Review?
+  milestones    ProjectMilestone[]
+
+  @@map("bookings")
+}
+
+model JobStatusHistory {
+  id        String     @id @default(uuid()) @db.Uuid
+  bookingId String     @map("booking_id") @db.Uuid
+  actorId   String     @map("actor_id") @db.Uuid
+  oldStatus JobStatus? @map("old_status")
+  newStatus JobStatus  @map("new_status")
+  note      String?    @db.Text
+  createdAt DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+  actor   User    @relation(fields: [actorId], references: [id])
+
+  @@map("job_status_history")
+}
+
+model Review {
+  id         String   @id @default(uuid()) @db.Uuid
+  bookingId  String   @unique @map("booking_id") @db.Uuid
+  reviewerId String   @map("reviewer_id") @db.Uuid
+  rating     Int      @db.SmallInt
+  comment    String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  booking  Booking @relation(fields: [bookingId], references: [id])
+  reviewer User    @relation(fields: [reviewerId], references: [id])
+
+  @@map("reviews")
+}
+
+model ProjectMilestone {
+  id          String    @id @default(uuid()) @db.Uuid
+  bookingId   String    @map("booking_id") @db.Uuid
+  title       String    @db.VarChar(160)
+  description String?   @db.Text
+  amount      BigInt?
+  currency    String    @default("MMK") @db.Char(3)
+  dueAt       DateTime? @map("due_at") @db.Timestamptz(6)
+  status      String    @default("pending") @db.VarChar(24)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@map("project_milestones")
+}

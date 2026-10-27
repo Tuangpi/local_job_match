@@ -2,7 +2,8 @@ node_modules/
 dist/
 coverage/
 package-lock.json
-storage/uploads/
+apps/api/storage/uploads/
+apps/api/src/generated/
 
 # Docs use a deliberate Markdown list style; do not reformat them.
 *.md

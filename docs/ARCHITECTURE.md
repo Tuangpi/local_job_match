@@ -32,6 +32,10 @@ local-job-match/
 │   │       ├── lib/          # API client and utilities
 │   │       └── i18n/         # Burmese and English
 │   └── api/                  # Express backend
+│       ├── prisma/           # Prisma schema and migrations
+│       │   └── schema.prisma
+│       ├── storage/          # Local uploaded files
+│       │   └── uploads/
 │       └── src/
 │           ├── modules/      # Business modules
 │           ├── middleware/
@@ -41,10 +45,6 @@ local-job-match/
 │           └── server.ts
 ├── packages/
 │   └── shared/               # Optional shared types
-├── storage/
-│   └── uploads/              # Local uploaded files
-├── prisma/
-│   └── schema.prisma
 ├── tests/
 ├── docs/
 ├── .env.example
@@ -91,7 +91,7 @@ Use database transactions for critical operations, especially quotation acceptan
 
 Use the backend server's local filesystem for the MVP.
 
-- Store uploads under `storage/uploads/`, outside the frontend's public directory.
+- Store uploads under `apps/api/storage/uploads/`, outside the frontend's public directory.
 - Allow only approved file types and enforce file-size limits.
 - Generate random filenames; never trust client-provided paths.
 - Check authorization before serving private job attachments.

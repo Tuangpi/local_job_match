@@ -16,9 +16,9 @@
   - [x] Initialize TypeScript config, linting, formatting
   - [x] Set up test runner, CI
   - [x] Configure environment variables (.env.example)
-- [ ] Set up PostgreSQL and Prisma migrations
-  - [ ] Initialize Prisma schema
-  - [ ] Create initial migration setup
+- [x] Set up PostgreSQL and Prisma migrations
+  - [x] Initialize Prisma schema
+  - [x] Create initial migration setup
 - [ ] Implement authentication/session handling and account statuses
   - [ ] Phone OTP request endpoint
   - [ ] OTP verification endpoint

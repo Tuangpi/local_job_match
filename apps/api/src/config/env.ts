@@ -6,16 +6,15 @@ loadDotenv();
 /**
  * Environment configuration.
  *
- * `DATABASE_URL` and `AUTH_SESSION_SECRET` are optional for now so the API
- * can boot for local development before Prisma and session auth land.
- * TODO(Task 2): make DATABASE_URL required once Prisma is wired in.
+ * `AUTH_SESSION_SECRET` is optional for now so the API can boot for local
+ * development before session auth lands.
  * TODO(Task 3): make AUTH_SESSION_SECRET required once sessions are used.
  */
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   API_PORT: z.coerce.number().int().positive().default(4000),
   WEB_ORIGIN: z.string().default('http://localhost:5173'),
-  DATABASE_URL: z.string().optional(),
+  DATABASE_URL: z.string(),
   AUTH_SESSION_SECRET: z.string().optional(),
   OTP_PROVIDER_API_KEY: z.string().optional(),
   UPLOAD_DIR: z.string().default('./storage/uploads'),

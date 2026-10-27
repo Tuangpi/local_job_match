@@ -1,17 +1,22 @@
 # Local Job Match - Progress Tracker
 
 ## Current State
-- **Current task**: Phase 1 - Set up PostgreSQL and Prisma migrations (not started)
+- **Current task**: Phase 1 - Implement authentication/session handling (not started)
 - **Current phase**: Phase 1 - Project Foundation (in progress)
-- **Next task**: Initialize Prisma schema and first migration
+- **Next task**: Phone OTP request endpoint
 
 ## Recently Completed
+- [x] Phase 1 - Set up PostgreSQL and Prisma migrations: Prisma 7 schema with starter tables, initial migration applied to `local_job_match`, generated client wired via `@prisma/adapter-pg`
 - [x] Phase 1 - Application and repository structure: npm workspaces (`apps/api`, `apps/web`, `packages/shared`), strict TypeScript, ESLint 9, Prettier, Vitest, GitHub Actions CI
 - [x] Phase 1 - Health endpoint and frontend health panel: verified `GET /api/v1/health` end-to-end through the Vite dev proxy
 - [x] Phase 0 - Validate Requirements: Defined launch city/townships, categories, recruited experts, confirmed OTP/hosting providers
 - [x] Project documentation reviewed: PRD.md, ARCHITECTURE.md, DATABASE.md, API.md, SECURITY.md, IMPLEMENTATION_PLAN.md
 
 ## This Session
+- [x] Set up Prisma 7: created `apps/api/prisma/schema.prisma` (starter tables + enums), `apps/api/prisma.config.ts`, applied initial migration `20261027093851_init`
+- [x] Wired Prisma client via `@prisma/adapter-pg` in `apps/api/src/lib/prisma.ts`
+- [x] Made `DATABASE_URL` required in env config; synced `apps/api/.env`
+- [x] Added Prisma npm scripts and generate step to build/typecheck
 - [x] Created root workspace: `package.json` (workspaces, scripts), `tsconfig.base.json`, `tsconfig.json` (project references)
 - [x] Added tooling: `eslint.config.js` (flat config, type-checked), `.prettierrc.json`, `.prettierignore`, `.editorconfig`
 - [x] Added `.env.example` (blank values) and `.gitignore`
@@ -26,12 +31,13 @@
 - None currently; repository foundation is in place and verified
 
 ## Next Steps
-1. Set up PostgreSQL and Prisma migrations (Phase 1 task 2)
-   - Initialize `prisma/schema.prisma` from docs/DATABASE.md
-   - Create and apply the first migration against `local_job_match`
-2. Implement authentication/session handling
-3. Seed categories, cities, and townships
-4. Create shared UI patterns and Burmese/English localization
+1. Implement authentication/session handling (Phase 1 task 3)
+   - Phone OTP request endpoint
+   - OTP verification endpoint
+   - Session management
+   - User role (customer/expert/admin)
+2. Seed categories, cities, and townships
+3. Create shared UI patterns and Burmese/English localization
 
 ## Recent Decisions
 - Modular monolith architecture with Node.js + Express + TypeScript backend

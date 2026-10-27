@@ -10,7 +10,7 @@ export default tseslint.config(
       '**/coverage/**',
       '**/node_modules/**',
       '**/*.tsbuildinfo',
-      'storage/**',
+      'apps/api/storage/**',
     ],
   },
   js.configs.recommended,
