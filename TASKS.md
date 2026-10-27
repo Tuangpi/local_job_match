@@ -19,11 +19,11 @@
 - [x] Set up PostgreSQL and Prisma migrations
   - [x] Initialize Prisma schema
   - [x] Create initial migration setup
-- [ ] Implement authentication/session handling and account statuses
-  - [ ] Phone OTP request endpoint
-  - [ ] OTP verification endpoint
-  - [ ] Session management
-  - [ ] User role (customer/expert/admin)
+- [x] Implement authentication/session handling and account statuses
+  - [x] Phone OTP request endpoint
+  - [x] OTP verification endpoint
+  - [x] Session management
+  - [x] User role (customer/expert/admin)
 - [ ] Seed categories, cities, and townships
   - [ ] Define initial service categories
   - [ ] Define city/township taxonomy for Myanmar

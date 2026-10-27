@@ -1,11 +1,12 @@
 # Local Job Match - Progress Tracker
 
 ## Current State
-- **Current task**: Phase 1 - Implement authentication/session handling (not started)
+- **Current task**: Phase 1 - Seed categories, cities, and townships (not started)
 - **Current phase**: Phase 1 - Project Foundation (in progress)
-- **Next task**: Phone OTP request endpoint
+- **Next task**: Define initial service categories
 
 ## Recently Completed
+- [x] Phase 1 - Implement authentication/session handling: OTP request/verify, DB-backed sessions with HTTP-only cookies, `/users/me` get/patch, roles array
 - [x] Phase 1 - Set up PostgreSQL and Prisma migrations: Prisma 7 schema with starter tables, initial migration applied to `local_job_match`, generated client wired via `@prisma/adapter-pg`
 - [x] Phase 1 - Application and repository structure: npm workspaces (`apps/api`, `apps/web`, `packages/shared`), strict TypeScript, ESLint 9, Prettier, Vitest, GitHub Actions CI
 - [x] Phase 1 - Health endpoint and frontend health panel: verified `GET /api/v1/health` end-to-end through the Vite dev proxy
@@ -13,6 +14,11 @@
 - [x] Project documentation reviewed: PRD.md, ARCHITECTURE.md, DATABASE.md, API.md, SECURITY.md, IMPLEMENTATION_PLAN.md
 
 ## This Session
+- [x] Implemented auth module: `auth.service.ts`, schemas, controller, routes; users module with `/users/me`
+- [x] Added `authContext` middleware and wired into app; cookie-based sessions
+- [x] Added `UserRole` enum, `roles`, `Session`, `OtpChallenge` models and migration `auth_sessions`
+- [x] Made `AUTH_SESSION_SECRET` required in env config
+- [x] Verified OTP request/verify, `/users/me` get/patch, logout end-to-end
 - [x] Set up Prisma 7: created `apps/api/prisma/schema.prisma` (starter tables + enums), `apps/api/prisma.config.ts`, applied initial migration `20261027093851_init`
 - [x] Wired Prisma client via `@prisma/adapter-pg` in `apps/api/src/lib/prisma.ts`
 - [x] Made `DATABASE_URL` required in env config; synced `apps/api/.env`
@@ -31,13 +37,11 @@
 - None currently; repository foundation is in place and verified
 
 ## Next Steps
-1. Implement authentication/session handling (Phase 1 task 3)
-   - Phone OTP request endpoint
-   - OTP verification endpoint
-   - Session management
-   - User role (customer/expert/admin)
-2. Seed categories, cities, and townships
-3. Create shared UI patterns and Burmese/English localization
+1. Seed categories, cities, and townships (Phase 1 task 4)
+   - Define initial service categories
+   - Define city/township taxonomy for Myanmar
+2. Create shared UI patterns and Burmese/English localization
+3. Expert profiles and discovery (Phase 2)
 
 ## Recent Decisions
 - Modular monolith architecture with Node.js + Express + TypeScript backend

@@ -39,6 +39,12 @@ enum JobStatus {
   disputed
 }
 
+enum UserRole {
+  customer
+  expert
+  admin
+}
+
 enum QuotationStatus {
   pending
   accepted
@@ -53,6 +59,7 @@ model User {
   name              String        @db.VarChar(120)
   preferredLanguage String        @default("my") @map("preferred_language") @db.VarChar(5)
   status            AccountStatus @default(pending)
+  roles             UserRole[]    @default([customer])
   createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
 
@@ -60,6 +67,7 @@ model User {
   jobRequests          JobRequest[]
   statusHistoryActions JobStatusHistory[]
   reviews              Review[]
+  sessions             Session[]
 
   @@map("users")
 }
@@ -267,4 +275,29 @@ model ProjectMilestone {
   booking Booking @relation(fields: [bookingId], references: [id])
 
   @@map("project_milestones")
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model OtpChallenge {
+  id         String    @id @default(uuid()) @db.Uuid
+  phone      String    @db.VarChar(32)
+  codeHash   String    @map("code_hash")
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(6)
+  attempts   Int       @default(0)
+  consumedAt DateTime? @map("consumed_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([phone, createdAt(sort: Desc)])
+  @@map("otp_challenges")
 }

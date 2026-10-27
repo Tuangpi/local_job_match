@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import { env } from './config/env.js';
 import { errorHandler, notFoundHandler } from './common/error-handler.js';
+import { authContext } from './middleware/auth.js';
 import { requestId, requestLogger } from './middleware/request-id.js';
 import { apiRouter } from './modules/index.js';
 
@@ -25,6 +26,7 @@ export function createApp(): Express {
 
   app.use(requestId);
   app.use(requestLogger);
+  app.use(authContext);
 
   app.get('/', (_req, res) => {
     res.json({
