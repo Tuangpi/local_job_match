@@ -1,11 +1,13 @@
 # Local Job Match - Progress Tracker
 
 ## Current State
-- **Current task**: None (Phase 2 complete)
-- **Current phase**: Phase 2 - Expert Profiles and Discovery (complete)
-- **Next task**: Phase 3 - Implement job creation, editing, and photo upload
+- **Current task**: None (invitations and quotations complete)
+- **Current phase**: Phase 3 - Jobs and Quotations
+- **Next task**: Add customer quotation comparison
 
 ## Recently Completed
+- [x] Phase 3 - Invitations and quotations: `POST /jobs/{jobId}/invitations`, `PUT /experts/me/quotations`, `POST /jobs/{jobId}/quotations`
+- [x] Phase 3 - Job creation/editing/photo upload: `POST /jobs`, `PATCH /jobs/{jobId}`, `POST /jobs/{jobId}/photos`
 - [x] Phase 2 - Admin verification queue: `GET /admin/experts/pending-verification`, `POST /admin/experts/{expertId}/verification-decision` (admin-only)
 - [x] Phase 2 - Public expert profile: `GET /experts/{expertId}` returns public profile with verification status
 - [x] Phase 2 - Build category/township search with pagination: `/categories`, `/locations/cities`, `/locations/townships`, `/experts` search endpoints

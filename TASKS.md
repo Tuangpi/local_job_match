@@ -53,13 +53,13 @@
 **Exit criteria**: Customer can search and view eligible experts; private verification documents are inaccessible publicly.
 
 ## Phase 3 - Jobs and Quotations
-- [ ] Implement job creation, editing, and photo upload
-  - [ ] POST /jobs job creation with validation
-  - [ ] PATCH /jobs/{jobId} job editing (eligible users only)
-  - [ ] Photo upload with type/size limits
-- [ ] Implement invitations and quotation submission
-  - [ ] POST /jobs/{jobId}/invitations expert invitation
-  - [ ] PUT /experts/me/quotations quotation submission
+- [x] Implement job creation, editing, and photo upload
+  - [x] POST /jobs job creation with validation
+  - [x] PATCH /jobs/{jobId} job editing (eligible users only)
+  - [x] Photo upload with type/size limits
+- [x] Implement invitations and quotation submission
+  - [x] POST /jobs/{jobId}/invitations expert invitation
+  - [x] PUT /experts/me/quotations quotation submission
 - [ ] Add customer quotation comparison
   - [ ] GET /jobs/{jobId} view with quotations
   - [ ] UI for comparing scope, cost, duration, profiles
@@ -121,4 +121,4 @@
 
 ## Current Focus
 - Current sprint: Phase 3 - Jobs and Quotations
-- Next target: Implement job creation, editing, and photo upload
+- Next target: Add customer quotation comparison

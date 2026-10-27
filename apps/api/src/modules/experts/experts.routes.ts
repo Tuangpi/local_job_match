@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { requireAuth } from '../../middleware/auth.js';
+import { submitQuotationByExpertController } from '../jobs/jobs.controller.js';
 import {
   createProfileController,
   getProfileController,
@@ -22,3 +23,4 @@ expertsRouter.patch('/me/profile', requireAuth, updateProfileController);
 expertsRouter.put('/me/skills', requireAuth, replaceSkillsController);
 expertsRouter.put('/me/areas', requireAuth, replaceAreasController);
 expertsRouter.put('/me/portfolio', requireAuth, replacePortfolioController);
+expertsRouter.put('/me/quotations', requireAuth, submitQuotationByExpertController);

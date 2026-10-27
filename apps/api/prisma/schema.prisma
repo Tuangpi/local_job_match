@@ -68,6 +68,7 @@ model User {
   statusHistoryActions JobStatusHistory[]
   reviews              Review[]
   sessions             Session[]
+  jobInvitationsSent   JobInvitation[] @relation("JobInvitationsSent")
 
   @@map("users")
 }
@@ -125,6 +126,7 @@ model ExpertProfile {
   areas      ExpertArea[]
   quotations Quotation[]
   portfolioItems ExpertPortfolioItem[]
+  jobInvitations JobInvitation[]
 
   @@map("expert_profiles")
 }
@@ -174,6 +176,7 @@ model JobRequest {
   photos     JobPhoto[]
   quotations Quotation[]
   booking    Booking?
+  invitations JobInvitation[]
 
   @@index([townshipId, categoryId, status], name: "idx_jobs_location_category_status")
   @@index([customerId, createdAt(sort: Desc)], name: "idx_jobs_customer_created")
@@ -313,4 +316,20 @@ model ExpertPortfolioItem {
   expert ExpertProfile @relation(fields: [expertId], references: [userId], onDelete: Cascade)
 
   @@map("expert_portfolio_items")
+}
+
+model JobInvitation {
+  id        String   @id @default(uuid()) @db.Uuid
+  jobId     String   @map("job_id") @db.Uuid
+  expertId  String   @map("expert_id") @db.Uuid
+  invitedBy String   @map("invited_by") @db.Uuid
+  status    String   @default("pending") @db.VarChar(24)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  job       JobRequest    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  expert    ExpertProfile @relation(fields: [expertId], references: [userId], onDelete: Cascade)
+  inviter   User          @relation("JobInvitationsSent", fields: [invitedBy], references: [id], onDelete: Cascade)
+
+  @@unique([jobId, expertId])
+  @@map("job_invitations")
 }
