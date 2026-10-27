@@ -11,5 +11,11 @@
     "declarationMap": false,
     "noEmit": true
   },
-  "include": ["src/**/*.ts", "tests/**/*.ts", "vitest.config.ts", "prisma.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "tests/**/*.ts",
+    "vitest.config.ts",
+    "prisma.config.ts",
+    "prisma/seed.ts"
+  ]
 }

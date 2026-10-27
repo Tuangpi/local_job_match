@@ -6,21 +6,33 @@ import my from './locales/my.json';
 
 export const LANGUAGE_STORAGE_KEY = 'ljm.language';
 
+const initialLanguage = getStoredLanguageSafe();
+
 void i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
     my: { translation: my },
   },
-  lng: DEFAULT_LANGUAGE,
+  lng: initialLanguage,
   fallbackLng: 'en',
   supportedLngs: ['my', 'en'],
   interpolation: { escapeValue: false },
 });
 
+document.documentElement.lang = initialLanguage;
+
 /** Read the stored language preference, falling back to the default. */
 export function getStoredLanguage(): Language {
   const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
   return stored === 'en' || stored === 'my' ? stored : DEFAULT_LANGUAGE;
+}
+
+function getStoredLanguageSafe(): Language {
+  try {
+    return getStoredLanguage();
+  } catch {
+    return DEFAULT_LANGUAGE;
+  }
 }
 
 /** Persist and apply a language choice. */

@@ -24,21 +24,21 @@
   - [x] OTP verification endpoint
   - [x] Session management
   - [x] User role (customer/expert/admin)
-- [ ] Seed categories, cities, and townships
-  - [ ] Define initial service categories
-  - [ ] Define city/township taxonomy for Myanmar
-- [ ] Create shared UI patterns and Burmese/English localization
-  - [ ] Set up i18n routing
-  - [ ] Create base language files (my, en)
+- [x] Seed categories, cities, and townships
+  - [x] Define initial service categories
+  - [x] Define city/township taxonomy for Myanmar
+- [x] Create shared UI patterns and Burmese/English localization
+  - [x] Set up i18n routing
+  - [x] Create base language files (my, en)
 
 **Exit criteria**: Users can sign in, update profile basics, and the app runs in development and staging.
 
 ## Phase 2 - Expert Profiles and Discovery
-- [ ] Implement expert profiles, skills, service areas, and portfolio references
-  - [ ] Expert profile creation/edition API
-  - [ ] Skills management (PUT /experts/me/skills)
-  - [ ] Service areas management (PUT /experts/me/areas)
-  - [ ] Portfolio item references
+- [x] Implement expert profiles, skills, service areas, and portfolio references
+  - [x] Expert profile creation/edition API
+  - [x] Skills management (PUT /experts/me/skills)
+  - [x] Service areas management (PUT /experts/me/areas)
+  - [x] Portfolio item references
 - [ ] Build category/township search with pagination
   - [ ] GET /categories endpoint
   - [ ] GET /locations/townships endpoint

@@ -124,6 +124,7 @@ model ExpertProfile {
   skills     ExpertSkill[]
   areas      ExpertArea[]
   quotations Quotation[]
+  portfolioItems ExpertPortfolioItem[]
 
   @@map("expert_profiles")
 }
@@ -300,4 +301,16 @@ model OtpChallenge {
 
   @@index([phone, createdAt(sort: Desc)])
   @@map("otp_challenges")
+}
+
+model ExpertPortfolioItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  expertId   String   @map("expert_id") @db.Uuid
+  storageKey String   @map("storage_key")
+  caption    String?  @db.Text
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  expert ExpertProfile @relation(fields: [expertId], references: [userId], onDelete: Cascade)
+
+  @@map("expert_portfolio_items")
 }

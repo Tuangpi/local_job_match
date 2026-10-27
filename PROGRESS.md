@@ -1,11 +1,14 @@
 # Local Job Match - Progress Tracker
 
 ## Current State
-- **Current task**: Phase 1 - Seed categories, cities, and townships (not started)
-- **Current phase**: Phase 1 - Project Foundation (in progress)
-- **Next task**: Define initial service categories
+- **Current task**: Phase 2 - Build category/township search with pagination (not started)
+- **Current phase**: Phase 2 - Expert Profiles and Discovery
+- **Next task**: GET /categories endpoint
 
 ## Recently Completed
+- [x] Phase 2 - Expert profiles, skills, service areas, portfolio: `/experts/me/profile`, `/me/skills`, `/me/areas`, `/me/portfolio` endpoints verified
+- [x] Phase 1 - Create shared UI patterns and Burmese/English localization: persisted language preference, expanded base locale files
+- [x] Phase 1 - Seed categories, cities, and townships: Yangon + 6 townships + 6 categories via `prisma db seed`
 - [x] Phase 1 - Implement authentication/session handling: OTP request/verify, DB-backed sessions with HTTP-only cookies, `/users/me` get/patch, roles array
 - [x] Phase 1 - Set up PostgreSQL and Prisma migrations: Prisma 7 schema with starter tables, initial migration applied to `local_job_match`, generated client wired via `@prisma/adapter-pg`
 - [x] Phase 1 - Application and repository structure: npm workspaces (`apps/api`, `apps/web`, `packages/shared`), strict TypeScript, ESLint 9, Prettier, Vitest, GitHub Actions CI
@@ -14,6 +17,11 @@
 - [x] Project documentation reviewed: PRD.md, ARCHITECTURE.md, DATABASE.md, API.md, SECURITY.md, IMPLEMENTATION_PLAN.md
 
 ## This Session
+- [x] Implemented expert profiles module: profile create/get/patch, skills/areas/portfolio replace endpoints
+- [x] Added `ExpertPortfolioItem` model and `expert_profiles` migration
+- [x] Verified expert profile flow end-to-end (create, skills, areas, portfolio, get)
+- [x] Persisted language preference on startup in `i18n/index.ts`; expanded base locale files (common/auth/errors)
+- [x] Added seed script `prisma/seed.ts` with Yangon, 6 townships, 6 categories; configured `prisma db seed`
 - [x] Implemented auth module: `auth.service.ts`, schemas, controller, routes; users module with `/users/me`
 - [x] Added `authContext` middleware and wired into app; cookie-based sessions
 - [x] Added `UserRole` enum, `roles`, `Session`, `OtpChallenge` models and migration `auth_sessions`
@@ -37,11 +45,12 @@
 - None currently; repository foundation is in place and verified
 
 ## Next Steps
-1. Seed categories, cities, and townships (Phase 1 task 4)
-   - Define initial service categories
-   - Define city/township taxonomy for Myanmar
-2. Create shared UI patterns and Burmese/English localization
-3. Expert profiles and discovery (Phase 2)
+1. Build category/township search with pagination (Phase 2)
+   - GET /categories endpoint
+   - GET /locations/townships endpoint
+   - Expert search with filters (GET /experts)
+2. Implement public profile pages and verification labels
+3. Build admin verification queue
 
 ## Recent Decisions
 - Modular monolith architecture with Node.js + Express + TypeScript backend

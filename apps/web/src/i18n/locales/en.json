@@ -16,5 +16,21 @@
     "ok": "API connected",
     "failed": "API unreachable",
     "checkedAt": "Checked at {{time}}"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "retry": "Try again"
+  },
+  "auth": {
+    "phone": "Phone number",
+    "code": "Verification code",
+    "requestOtp": "Send code",
+    "verifyOtp": "Verify",
+    "logout": "Sign out"
+  },
+  "errors": {
+    "generic": "Something went wrong."
   }
 }
