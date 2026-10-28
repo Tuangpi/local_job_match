@@ -12,6 +12,7 @@ import {
   replacePortfolio,
   searchExperts,
   getPublicExpertProfile,
+  getExpertReviews,
 } from './experts.service.js';
 import {
   createExpertProfileSchema,
@@ -67,6 +68,12 @@ export const searchExpertsController = asyncHandler(async (req: Request, res: Re
   const query = expertsSearchQuerySchema.parse(req.query);
   const result = await searchExperts(query);
   ok(res, result);
+});
+
+export const getExpertReviewsController = asyncHandler(async (req: Request, res: Response) => {
+  const { expertId } = expertIdParamSchema.parse(req.params);
+  const result = await getExpertReviews(expertId);
+  ok(res, { items: result });
 });
 
 export const getPublicProfileController = asyncHandler(async (req: Request, res: Response) => {

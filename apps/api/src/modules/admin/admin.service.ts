@@ -171,3 +171,181 @@ function normalizeDecision(input: VerificationDecisionInput): 'verified' | 'reje
     })),
   };
 }
+export interface AdminUserView {
+  id: string;
+  phone: string;
+  name: string;
+  status: string;
+  roles: string[];
+  createdAt: string;
+}
+
+export async function listUsers(): Promise<AdminUserView[]> {
+  const users = await prisma.user.findMany({ orderBy: { createdAt: 'desc' }, take: 200 });
+  return users.map((u) => ({
+    id: u.id,
+    phone: u.phone,
+    name: u.name,
+    status: u.status,
+    roles: u.roles,
+    createdAt: u.createdAt.toISOString(),
+  }));
+}
+
+export async function updateUserStatus(adminId: string, userId: string, status: string): Promise<AdminUserView> {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw notFound('User not found.');
+  const updated = await prisma.user.update({ where: { id: userId }, data: { status: status as any } });
+  const { logAdminAction } = await import('../../common/audit.js');
+  await logAdminAction(adminId, 'user.status.update', 'user', userId, { from: user.status, to: status });
+  return {
+    id: updated.id,
+    phone: updated.phone,
+    name: updated.name,
+    status: updated.status,
+    roles: updated.roles,
+    createdAt: updated.createdAt.toISOString(),
+  };
+}
+
+export interface AdminCategoryView {
+  id: string;
+  parentId: string | null;
+  slug: string;
+  nameEn: string;
+  nameMy: string | null;
+  isActive: boolean;
+}
+
+export async function listCategoriesAdmin(): Promise<AdminCategoryView[]> {
+  const cats = await prisma.category.findMany({ orderBy: { nameEn: 'asc' } });
+  return cats.map((c) => ({
+    id: c.id,
+    parentId: c.parentId,
+    slug: c.slug,
+    nameEn: c.nameEn,
+    nameMy: c.nameMy,
+    isActive: c.isActive,
+  }));
+}
+
+export async function createCategory(adminId: string, input: any): Promise<AdminCategoryView> {
+  const created = await prisma.category.create({
+    data: {
+      parentId: input.parentId ?? null,
+      slug: input.slug,
+      nameEn: input.nameEn,
+      nameMy: input.nameMy ?? null,
+      isActive: input.isActive ?? true,
+    },
+  });
+  const { logAdminAction } = await import('../../common/audit.js');
+  await logAdminAction(adminId, 'category.create', 'category', created.id, { slug: created.slug });
+  return {
+    id: created.id,
+    parentId: created.parentId,
+    slug: created.slug,
+    nameEn: created.nameEn,
+    nameMy: created.nameMy,
+    isActive: created.isActive,
+  };
+}
+
+export async function updateCategory(adminId: string, categoryId: string, input: any): Promise<AdminCategoryView> {
+  const existing = await prisma.category.findUnique({ where: { id: categoryId } });
+  if (!existing) throw notFound('Category not found.');
+  const updated = await prisma.category.update({
+    where: { id: categoryId },
+    data: {
+      parentId: input.parentId !== undefined ? input.parentId : existing.parentId,
+      slug: input.slug ?? existing.slug,
+      nameEn: input.nameEn ?? existing.nameEn,
+      nameMy: input.nameMy !== undefined ? input.nameMy : existing.nameMy,
+      isActive: input.isActive !== undefined ? input.isActive : existing.isActive,
+    },
+  });
+  const { logAdminAction } = await import('../../common/audit.js');
+  await logAdminAction(adminId, 'category.update', 'category', categoryId, input);
+  return {
+    id: updated.id,
+    parentId: updated.parentId,
+    slug: updated.slug,
+    nameEn: updated.nameEn,
+    nameMy: updated.nameMy,
+    isActive: updated.isActive,
+  };
+}
+
+export async function deleteCategory(adminId: string, categoryId: string): Promise<{ id: string }> {
+  const existing = await prisma.category.findUnique({ where: { id: categoryId } });
+  if (!existing) throw notFound('Category not found.');
+  await prisma.category.delete({ where: { id: categoryId } });
+  const { logAdminAction } = await import('../../common/audit.js');
+  await logAdminAction(adminId, 'category.delete', 'category', categoryId, { slug: existing.slug });
+  return { id: categoryId };
+}
+
+export interface AdminAuditLogView {
+  id: string;
+  adminId: string;
+  action: string;
+  targetType: string;
+  targetId: string | null;
+  metadata: unknown;
+  createdAt: string;
+}
+
+export async function listAuditLogs(limit: number): Promise<AdminAuditLogView[]> {
+  const logs = await prisma.adminAuditLog.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: limit,
+  });
+  return logs.map((l) => ({
+    id: l.id,
+    adminId: l.adminId,
+    action: l.action,
+    targetType: l.targetType,
+    targetId: l.targetId,
+    metadata: l.metadata,
+    createdAt: l.createdAt.toISOString(),
+  }));
+}
+
+export interface AnalyticsView {
+  users: { total: number; active: number; suspended: number };
+  experts: { total: number };
+  jobs: Record<string, number>;
+  bookings: Record<string, number>;
+  quotations: { total: number };
+  reviews: { total: number; averageRating: number | null };
+  reports: Record<string, number>;
+}
+
+export async function getAnalytics(): Promise<AnalyticsView> {
+  const [usersTotal, usersActive, usersSuspended, expertsTotal, jobs, bookings, quotationsTotal, reviews, reports] = await Promise.all([
+    prisma.user.count(),
+    prisma.user.count({ where: { status: 'active' } }),
+    prisma.user.count({ where: { status: 'suspended' } }),
+    prisma.expertProfile.count(),
+    prisma.jobRequest.groupBy({ by: ['status'], _count: { _all: true } }),
+    prisma.booking.groupBy({ by: ['status'], _count: { _all: true } }),
+    prisma.quotation.count(),
+    prisma.review.aggregate({ _count: { _all: true }, _avg: { rating: true } }),
+    prisma.report.groupBy({ by: ['status'], _count: { _all: true } }),
+  ]);
+  const jobsMap: Record<string, number> = {};
+  for (const j of jobs) jobsMap[j.status] = j._count._all;
+  const bookingsMap: Record<string, number> = {};
+  for (const b of bookings) bookingsMap[b.status] = b._count._all;
+  const reportsMap: Record<string, number> = {};
+  for (const r of reports) reportsMap[r.status] = r._count._all;
+  return {
+    users: { total: usersTotal, active: usersActive, suspended: usersSuspended },
+    experts: { total: expertsTotal },
+    jobs: jobsMap,
+    bookings: bookingsMap,
+    quotations: { total: quotationsTotal },
+    reviews: { total: reviews._count._all, averageRating: reviews._avg.rating },
+    reports: reportsMap,
+  };
+}

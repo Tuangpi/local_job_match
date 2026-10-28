@@ -1,5 +1,6 @@
 import { prisma } from '../../lib/prisma.js';
 import { conflict, notFound } from '../../common/errors.js';
+import { listExpertReviews } from '../bookings/bookings.service.js';
 import type {
   ExpertsSearchQuery,
   CreateExpertProfileInput,
@@ -300,6 +301,10 @@ export async function searchExperts(query: ExpertsSearchQuery): Promise<ExpertSe
 
 function encodeCursor(createdAt: Date, userId: string): string {
   return Buffer.from(`${createdAt.toISOString()}|${userId}`).toString('base64url');
+}
+
+export async function getExpertReviews(expertId: string) {
+  return listExpertReviews(expertId);
 }
 
 function decodeCursor(cursor: string): { createdAt: Date; userId: string } | null {

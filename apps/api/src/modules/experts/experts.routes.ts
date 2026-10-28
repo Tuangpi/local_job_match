@@ -11,12 +11,14 @@ import {
   replacePortfolioController,
   searchExpertsController,
   getPublicProfileController,
+  getExpertReviewsController,
 } from './experts.controller.js';
 
 export const expertsRouter: Router = Router();
 
 expertsRouter.get('/', searchExpertsController);
 expertsRouter.get('/:expertId', getPublicProfileController);
+expertsRouter.get('/:expertId/reviews', getExpertReviewsController);
 expertsRouter.post('/me/profile', requireAuth, createProfileController);
 expertsRouter.get('/me/profile', requireAuth, getProfileController);
 expertsRouter.patch('/me/profile', requireAuth, updateProfileController);

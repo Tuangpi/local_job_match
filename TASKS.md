@@ -74,20 +74,20 @@
 **Exit criteria**: A customer can complete the full flow from job request to accepted quotation and booking.
 
 ## Phase 4 - Completion, Reviews, and Operations
-- [ ] Implement valid job status transitions
-  - [ ] Status enum definition and permitted transitions
-- [ ] Add review eligibility checks
-  - [ ] Only booking's customer can review
-  - [ ] Duplicate review prevention
-- [ ] Add complaint/report workflow
-  - [ ] POST /reports complaint submission
-  - [ ] GET /admin/reports list
-  - [ ] POST /admin/reports/{reportId}/resolve resolution
-- [ ] Implement admin moderation and audit logs
-  - [ ] Admin endpoints for users, experts, categories
-  - [ ] GET /admin/audit-logs audit event review
-- [ ] Add basic operational analytics
-  - [ ] Key metrics tracking
+- [x] Implement valid job status transitions
+  - [x] Status enum definition and permitted transitions
+- [x] Add review eligibility checks
+  - [x] Only booking's customer can review
+  - [x] Duplicate review prevention
+- [x] Add complaint/report workflow
+  - [x] POST /reports complaint submission
+  - [x] GET /admin/reports list
+  - [x] POST /admin/reports/{reportId}/resolve resolution
+- [x] Implement admin moderation and audit logs
+  - [x] Admin endpoints for users, experts, categories
+  - [x] GET /admin/audit-logs audit event review
+- [x] Add basic operational analytics
+  - [x] Key metrics tracking
 
 **Exit criteria**: Completed jobs can be reviewed; invalid transitions and unauthorized operations are rejected.
 
@@ -120,5 +120,5 @@
 - Phase 5 pilot MUST run before Phase 6 iteration
 
 ## Current Focus
-- Current sprint: Phase 3 - Jobs and Quotations
-- Next target: Implement valid job status transitions
+- Current sprint: Phase 4 - Completion, Reviews, and Operations (complete)
+- Next target: Phase 5 - Pilot readiness
