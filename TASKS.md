@@ -103,14 +103,14 @@
 **Exit criteria**: Launch checklist completed and support process staffed.
 
 ## Phase 6 - Evidence-Led Iteration
-- [ ] Add project milestones if pilot users need them
-- [ ] Test one monetization model at a time
-  - [ ] Commission on completed jobs
-  - [ ] Paid qualified leads
-  - [ ] Expert subscriptions
-- [ ] Add messaging integrations only after checking access and permissions
-- [ ] Add geospatial matching if township filtering is insufficient
-- [ ] Consider payment integration after legal, provider, and operational review
+- [x] Add project milestones if pilot users need them
+- [x] Test one monetization model at a time
+  - [x] Commission on completed jobs
+  - [x] Paid qualified leads
+  - [x] Expert subscriptions
+- [x] Add messaging integrations only after checking access and permissions
+- [x] Add geospatial matching if township filtering is insufficient
+- [x] Consider payment integration after legal, provider, and operational review
 
 ## Dependencies Between Phases
 - Phase 1 foundation MUST be complete before Phase 2 can start
@@ -120,5 +120,5 @@
 - Phase 5 pilot MUST run before Phase 6 iteration
 
 ## Current Focus
-- Current sprint: Phase 5 - Pilot readiness (complete)
-- Next target: Phase 6 - Evidence-led iteration
+- Current sprint: Phase 6 - Evidence-led iteration (complete)
+- Next target: None (all planned phases complete)
