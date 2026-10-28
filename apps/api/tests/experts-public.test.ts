@@ -11,7 +11,7 @@ describe('GET /api/v1/experts/:expertId', () => {
   beforeAll(async () => {
     const user = await prisma.user.create({
       data: {
-        phone: `+959${Date.now()}`,
+        phone: `+959${Date.now()}${Math.floor(Math.random()*1000000)}`,
         name: 'Test Expert',
         status: 'active',
         roles: ['expert'],

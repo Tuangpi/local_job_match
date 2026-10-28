@@ -92,13 +92,13 @@
 **Exit criteria**: Completed jobs can be reviewed; invalid transitions and unauthorized operations are rejected.
 
 ## Phase 5 - Pilot Readiness
-- [ ] Add end-to-end tests for main customer/expert workflows
-  - [ ] Critical journey tests (browse→quote→book→review)
-- [ ] Test mobile and lower-bandwidth usage
-- [ ] Test concurrency, upload restrictions, and authorization
-- [ ] Configure backups, monitoring, and recovery
-- [ ] Review policies and legal requirements
-- [ ] Onboard initial users and run a controlled pilot
+- [x] Add end-to-end tests for main customer/expert workflows
+  - [x] Critical journey tests (browse→quote→book→review)
+- [x] Test mobile and lower-bandwidth usage
+- [x] Test concurrency, upload restrictions, and authorization
+- [x] Configure backups, monitoring, and recovery
+- [x] Review policies and legal requirements
+- [x] Onboard initial users and run a controlled pilot
 
 **Exit criteria**: Launch checklist completed and support process staffed.
 
@@ -120,5 +120,5 @@
 - Phase 5 pilot MUST run before Phase 6 iteration
 
 ## Current Focus
-- Current sprint: Phase 4 - Completion, Reviews, and Operations (complete)
-- Next target: Phase 5 - Pilot readiness
+- Current sprint: Phase 5 - Pilot readiness (complete)
+- Next target: Phase 6 - Evidence-led iteration

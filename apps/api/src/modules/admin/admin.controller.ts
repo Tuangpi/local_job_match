@@ -50,7 +50,7 @@ export const listPendingVerificationController = asyncHandler(async (_req: Reque
 export const decideVerificationController = asyncHandler(async (req: Request, res: Response) => {
   const { expertId } = expertIdParamSchema.parse(req.params);
   const input = verificationDecisionSchema.parse(req.body ?? {});
-  const result = await decideExpertVerification(expertId, input);
+  const result = await decideExpertVerification(userId(req), expertId, input);
   ok(res, result);
 });
 

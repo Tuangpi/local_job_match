@@ -31,7 +31,7 @@ export function AppLayout(): React.JSX.Element {
           </div>
         </div>
         <nav className="mx-auto max-w-5xl px-4">
-          <ul className="flex gap-4 text-sm">
+          <ul className="flex flex-wrap gap-2 text-sm">
             {NAV_ITEMS.map((item) => (
               <li key={item.key}>
                 <NavLink

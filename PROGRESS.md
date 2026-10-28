@@ -1,11 +1,12 @@
 # Local Job Match - Progress Tracker
 
 ## Current State
-- **Current task**: None (Phase 4 complete)
-- **Current phase**: Phase 4 - Completion, Reviews, and Operations (complete)
-- **Next task**: Phase 5 - Pilot readiness
+- **Current task**: None (Phase 5 complete)
+- **Current phase**: Phase 5 - Pilot Readiness (complete)
+- **Next task**: Phase 6 - Evidence-led iteration
 
 ## Recently Completed
+- [x] Phase 5 - Pilot readiness: end-to-end journey, auth/discovery/jobs/quotation/review/admin tests, backup/recovery runbook, policy and launch checklist docs
 - [x] Phase 4 - Status transitions, reviews, reports, admin moderation, audit logs, analytics
 - [x] Phase 3 - Quotation acceptance: `POST/PATCH /quotations/{quotationId}/accept` creates booking, updates statuses, status history
 - [x] Phase 3 - Quotation comparison: `GET /jobs/{jobId}` and `GET /jobs/{jobId}/quotations` include quotation and expert details

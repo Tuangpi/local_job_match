@@ -245,9 +245,10 @@ export interface ExpertSearchResult {
 export async function searchExperts(query: ExpertsSearchQuery): Promise<ExpertSearchResult> {
   const where: {
     isAvailable: boolean;
+    user?: { status: 'active' };
     skills?: { some: { categoryId: string } };
     areas?: { some: { townshipId: string } };
-  } = { isAvailable: true };
+  } = { isAvailable: true, user: { status: 'active' } };
 
   if (query.categoryId) where.skills = { some: { categoryId: query.categoryId } };
   if (query.townshipId) where.areas = { some: { townshipId: query.townshipId } };

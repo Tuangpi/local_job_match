@@ -64,6 +64,7 @@ export async function listPendingVerificationExperts(): Promise<AdminExpertVerif
 }
 
 export async function decideExpertVerification(
+  adminId: string,
   expertId: string,
   input: VerificationDecisionInput,
 ): Promise<AdminExpertVerificationItem> {
@@ -149,6 +150,9 @@ function normalizeDecision(input: VerificationDecisionInput): 'verified' | 'reje
       portfolioItems: true,
     },
   });
+
+  const { logAdminAction } = await import('../../common/audit.js');
+  await logAdminAction(adminId, 'expert.verification.decision', 'expert', expertId, { status: newStatus });
 
   return {
     expertId: updated.userId,
